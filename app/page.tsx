@@ -1,6 +1,3 @@
 export default function Home() {
-  return (
-    
-    <div className="bg-red-400 py-5 mx-3">Hello Tailwind css</div>
-  );
+  return <div className="mx-3 bg-red-400 py-5">Hello Tailwind css</div>;
 }
