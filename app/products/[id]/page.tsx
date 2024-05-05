@@ -16,6 +16,18 @@ const ProductsPage = async ({ params: { id } }: ProductPageProps) => {
     },
     include: {
       restaurant: true,
+      category: true,
+    },
+  });
+
+  const extraProducts = await db.product.findMany({
+    where: {
+      category: {
+        name: `${product?.category.name}`,
+      },
+    },
+    include: {
+      restaurant: true,
     },
   });
 
@@ -26,7 +38,7 @@ const ProductsPage = async ({ params: { id } }: ProductPageProps) => {
   return (
     <div>
       <ProductImage product={product} />
-      <ProductDetails product={product} />
+      <ProductDetails product={product} extraProducts={extraProducts} />
     </div>
   );
 };

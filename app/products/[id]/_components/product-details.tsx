@@ -1,13 +1,20 @@
 "use client";
 
 import DiscountBadge from "@/app/_components/discount-badge";
+import ProductList from "@/app/_components/product-list";
 import { Button } from "@/app/_components/ui/button";
+import { Card } from "@/app/_components/ui/card";
 import {
   computedProductTotalPrice,
   formatCurrency,
 } from "@/app/_helpers/price";
 import { Prisma } from "@prisma/client";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import {
+  BikeIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  TimerIcon,
+} from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -17,9 +24,14 @@ interface ProductDetailsProps {
       restaurant: true;
     };
   }>;
+  extraProducts: Prisma.ProductGetPayload<{
+    include: {
+      restaurant: true;
+    };
+  }>[];
 }
 
-const ProductDetails = ({ product }: ProductDetailsProps) => {
+const ProductDetails = ({ product, extraProducts }: ProductDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
 
   const handleIncreaseQuantityClick = () => {
@@ -34,8 +46,8 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
   };
 
   return (
-    <div className="p-5">
-      <div className="flex items-center gap-2">
+    <div className="py-5">
+      <div className="flex items-center gap-2 px-5">
         <div className="relative h-7 w-7">
           <Image
             src={product.restaurant.imageUrl}
@@ -49,11 +61,11 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         </span>
       </div>
 
-      <h1 className="mb-1 mt-1 text-lg font-semibold">{product.name}</h1>
+      <h1 className="mb-1 mt-1 px-5 text-lg font-semibold">{product.name}</h1>
 
       {/* Preço do produto e quantidade */}
 
-      <div className="flex justify-between">
+      <div className="flex justify-between px-5">
         {/* Preço com desconto */}
         <div>
           <div className="flex items-center gap-2">
@@ -87,6 +99,51 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             <ChevronRightIcon />
           </Button>
         </div>
+      </div>
+
+      {/* Dados da entrega */}
+
+      <div className="px-5">
+        <Card className="mt-6 flex justify-around py-3">
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <span className="text-xs">Entrega</span>
+              <BikeIcon size={14} />
+            </div>
+            {Number(product.restaurant.deliveryFee) > 0 ? (
+              <p className="text-xs font-semibold">
+                {formatCurrency(Number(product.restaurant.deliveryFee))}
+              </p>
+            ) : (
+              <p className="text-xs font-semibold">Grátis</p>
+            )}
+          </div>
+
+          {/* tempo */}
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <span className="text-xs">Entrega</span>
+              <TimerIcon size={14} />
+            </div>
+            {Number(product.restaurant.deliveryFee) > 0 ? (
+              <p className="text-xs font-semibold">
+                {formatCurrency(Number(product.restaurant.deliveryFee))}
+              </p>
+            ) : (
+              <p className="text-xs font-semibold">Grátis</p>
+            )}
+          </div>
+        </Card>
+      </div>
+
+      <div className="mt-6 space-y-3 px-5">
+        <h3 className="font-semibold">Sobre</h3>
+        <p className="text-sm text-muted-foreground">{product.description}</p>
+      </div>
+
+      <div className="mt-6 space-y-3">
+        <h3 className="px-5 font-semibold">Relacionados</h3>
+        <ProductList products={extraProducts} />
       </div>
     </div>
   );
